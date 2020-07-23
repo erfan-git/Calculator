@@ -1,5 +1,6 @@
 package com.example.calculator.controller;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -12,9 +13,11 @@ import android.widget.Toast;
 
 import com.example.calculator.R;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String KEY_BUNDLE_TEXT_VIEW = "key bundle text view";
     private ImageButton mButtonAdd;
     private ImageButton mButtonSub;
     private ImageButton mButtonDivision;
@@ -41,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         findAllViews();
+        if (savedInstanceState != null) {
+            mTextViewResult.setText(savedInstanceState.getString(KEY_BUNDLE_TEXT_VIEW));
+        }
         setClickListeners();
 
     }
@@ -242,6 +248,13 @@ public class MainActivity extends AppCompatActivity {
         mButtonNine = findViewById(R.id.imageButton_nine);
         mButtonZero = findViewById(R.id.imageButton_zero);
         mTextViewResult = findViewById(R.id.textView);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_BUNDLE_TEXT_VIEW, mTextViewResult.getText().toString());
+
     }
 
 
