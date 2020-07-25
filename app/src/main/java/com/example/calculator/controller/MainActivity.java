@@ -3,17 +3,14 @@ package com.example.calculator.controller;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.calculator.R;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mButtonReset;
     private TextView mTextViewResult;
 
+    private String operand = "+-=×÷";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String text = mTextViewResult.getText().toString();
-                if (text != null) {
+                if (text != null && !(operand.contains(String.valueOf(text.charAt(text.length()-1)))) ) {
                     mTextViewResult.setText(text + "0");
                 }
 //                    Toast.makeText(MainActivity.this,"your username or password is false !!!",Toast.LENGTH_LONG).show();
@@ -139,7 +138,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String text = mTextViewResult.getText().toString();
-                mTextViewResult.setText(text + "+");
+                if ( !(operand.contains(String.valueOf(text.charAt(text.length()-1))))){
+                    mTextViewResult.setText(text + "+");
+                }
             }
         });
 
@@ -147,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String text = mTextViewResult.getText().toString();
-                mTextViewResult.setText(text + "-");
+                if ( !(operand.contains(String.valueOf(text.charAt(text.length()-1))))){
+                    mTextViewResult.setText(text + "-");
+                }
             }
         });
 
@@ -155,7 +158,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String text = mTextViewResult.getText().toString();
-                mTextViewResult.setText(text + "×");
+                if ( !(operand.contains(String.valueOf(text.charAt(text.length()-1))))){
+                    mTextViewResult.setText(text + "×");
+                }
+
             }
         });
 
@@ -163,7 +169,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String text = mTextViewResult.getText().toString();
-                mTextViewResult.setText(text + "÷");
+                if (!(operand.contains(String.valueOf(text.charAt(text.length()-1)))) && text.charAt(text.length()-1) != 0){
+                    mTextViewResult.setText(text + "÷");
+                }
+
             }
         });
 
@@ -200,32 +209,81 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String text = mTextViewResult.getText().toString();
                 if (text.length() != 0 && text != null) {
-                    text += "=";
-                    mTextViewResult.setText(parser(text));
+                    text =  text+ "= ";
+                    mTextViewResult.setText(parser(text).substring(0,parser(text).length()-1));
 
                 }
             }
         });
     }
 
+    /**
+     *
+     * @param text of textView
+     * @return result of operation
+     */
     private String parser(String text) {
-        BigDecimal temp1;
-        BigDecimal temp2;
-        BigDecimal temp = BigDecimal.valueOf(0);
+//        char[] operand ={'+','-','=','×','÷'};
+        String operand = "+-=×÷";
+
+//        BigDecimal temp = new BigDecimal(0);
+//        BigDecimal temp1 = new BigDecimal(0);
+//        BigDecimal temp2 = new BigDecimal(0);
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '+') {
                 for (int j = i + 1; j < text.length(); j++) {
-                    if (text.charAt(j) == '+' || text.charAt(j) == '-' || text.charAt(j) == '×' || text.charAt(j) == '=' || text.charAt(j) == '÷'‍)
-                    {
-                        temp1 = new BigDecimal(text.substring(0, i + 1));
-                        temp2 = new BigDecimal(text.substring(0, i + 1));
-//                        temp =BigDecimal.valueOf(temp1 + temp2) ;
+                    if (operand.contains(String.valueOf(text.charAt(j)))) {
+                        Double obj = Double.valueOf(text.substring(0, i ));
+
+                        Double obj1 = Double.valueOf(text.substring(i+1, j));
+
+                        Double temp = obj + obj1;
+
+                        text = temp + text.substring(j);
                     }
                 }
+            } else if (text.charAt(i) == '-') {
+                for (int j = i + 1; j < text.length(); j++) {
+                    if (operand.contains(String.valueOf(text.charAt(j)))) {
+                        Double obj = Double.valueOf(text.substring(0, i));
 
+                        Double obj1 = Double.valueOf(text.substring(i+1, j));
+
+                        Double temp = obj - obj1;
+
+                        text = temp + text.substring(j);
+                    }
+                }
+            } else if (text.charAt(i) == '×') {
+                for (int j = i + 1; j < text.length(); j++) {
+                    if (operand.contains(String.valueOf(text.charAt(j)))) {
+                        Double obj = Double.valueOf(text.substring(0, i));
+
+                        Double obj1 = Double.valueOf(text.substring(i+1, j));
+
+                        Double temp = 1.0;
+                        temp = obj * obj1;
+                        text = temp + text.substring(j);
+                    }
+                }
+            } else if (text.charAt(i) == '÷') {
+                for (int j = i + 1; j < text.length(); j++) {
+                    if (operand.contains(String.valueOf(text.charAt(j)))) {
+                        Double obj = Double.valueOf(text.substring(0, i));
+
+                        Double obj1 = Double.valueOf(text.substring(i+1, j));
+
+                        Double temp = obj / obj1;
+
+                        text = temp + text.substring(j);
+                    }
+                }
             }
+
         }
-        return temp.toString();
+//        Double checkNumber = Double.valueOf(text);
+//        if (checkNumber - )
+        return text;
     }
 
     private void findAllViews() {
@@ -254,8 +312,5 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(KEY_BUNDLE_TEXT_VIEW, mTextViewResult.getText().toString());
-
     }
-
-
 }
